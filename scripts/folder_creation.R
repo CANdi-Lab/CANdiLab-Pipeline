@@ -12,6 +12,9 @@ dir.create("scripts/analysis")
 dir.create("docs")
 dir.create("output")
 dir.create("output/figures")
+dir.create("output/figures/bargraphs")
+dir.create("output/figures/histograms")
+dir.create("output/figures/boxplots")
 
 # Create .gitkeep files to ensure empty folders are tracked by git
 file.create("data/.gitkeep")
