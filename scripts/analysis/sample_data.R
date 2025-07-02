@@ -49,7 +49,7 @@ subject_ids <- paste0("S", str_pad(1:100, width = 3, pad = "0"))
 # Generate Behavioral Data
 # -----------------------------
 behavioral_data <- tibble(
-  subject_id = subject_ids,
+  SUBID = subject_ids,
   reaction_time_ms = round(rnorm(100, mean = 600, sd = 100)),  # realistic RT
   accuracy = rbinom(100, size = 1, prob = 0.85)                # mostly correct
 )
@@ -78,7 +78,7 @@ survey_data <- tibble(
 # -----------------------------
 
 # Save CSV files
-write_csv(behavioral_data, here("data", "raw", paste0(study_acronym, "_behavioural_data.csv")))
-write_csv(imaging_data,    here("data", "raw", paste0(study_acronym, "_imaging_data.csv")))
-write_csv(survey_data,     here("data", "raw", paste0(study_acronym, "_survey_data.csv")))
+write_csv(behavioral_data, here("data", "raw", paste0("BEHAVIOURAL_data.csv")))
+write_csv(imaging_data,    here("data", "raw", paste0("IMAGING_data.csv")))
+write_csv(survey_data,     here("data", "raw", paste0("SURVEY_data.csv")))
 
