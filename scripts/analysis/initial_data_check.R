@@ -53,7 +53,7 @@ if ("group" %in% colnames(STUDYACRONYM_data)) {
 }
 
 # Plot: Bar plots for categorical variables
-cat_vars <- STUDYACRONYM_data %>% select(where(~ is.character(.x) || is.factor(.x)))
+cat_vars <- STUDYACRONYM_data |> select(where(~ is.character(.x) || is.factor(.x)))
 
 for (var in names(cat_vars)) {
   p <- ggplot(STUDYACRONYM_data, aes_string(x = var)) +
