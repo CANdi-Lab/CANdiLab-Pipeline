@@ -2,12 +2,11 @@
 #PURPOSE: perform an initial check on the data
 #install.packages("tidyverse") 
 library(tidyverse)
+library(ggplot2)
 #-------------------------------------------------------------------------------
-#Load in the data
-STUDYACRONYM_data <- read_csv("data/FOLDERNAME/STUDYACRONYM_data.csv")
 
 # --- Inspect basic structure ---
-#Dimensions
+#Dimensions (rows, columns)
 print(dim(STUDYACRONYM_data))
 
 #Column Names
@@ -22,11 +21,11 @@ print(sapply(STUDYACRONYM_data, class))
 #Summary stats
 print(summary(STUDYACRONYM_data))
 
-# --- Missing values per column ---
+# Check if there is missing values and what columns they are in
 missing <- colSums(is.na(STUDYACRONYM_data))
 print(missing[missing > 0])
 
-# --- Check for duplicate rows ---
+# Check for duplicate rows
 print(sum(duplicated(STUDYACRONYM_data)))
 
 # --- Plot: Histograms for numeric variables ---
@@ -41,7 +40,7 @@ for (var in names(num_vars)) {
   ggsave(filename = paste0("output/figures/histograms/hist_", var, ".png"), plot = p, width = 6, height = 4)
 }
 
-# --- Plot: Boxplots by group (if 'group' exists) ---
+# Plot: Boxplots by group (if 'group' exists)
 if ("group" %in% colnames(STUDYACRONYM_data)) {
   for (var in names(num_vars)) {
     p <- ggplot(STUDYACRONYM_data, aes_string(x = "group", y = var)) +
@@ -53,7 +52,7 @@ if ("group" %in% colnames(STUDYACRONYM_data)) {
   }
 }
 
-# --- Plot: Bar plots for categorical variables ---
+# Plot: Bar plots for categorical variables
 cat_vars <- STUDYACRONYM_data %>% select(where(~ is.character(.x) || is.factor(.x)))
 
 for (var in names(cat_vars)) {
