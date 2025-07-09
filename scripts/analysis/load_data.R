@@ -1,39 +1,44 @@
-#LOADING IN DATA
-#--------------------------------------------------------
+#LOADING IN DATAFRAMES
+#-------------------------------------------------------------------------------
 library(tidyverse)
 
-#LOAD IN THE DATA, 
-#as shown below name each dataframe with STUDYACRONYM_TYPEOFDATA_data
-STUDYACRONYM_behavioural_data <- read_csv("data/raw/BEHAVIOURAL_data.csv")
-STUDYACRONYM_imaging_data <- read_csv("data/raw/IMAGING_data.csv")
-STUDYACRONYM_survey_data <- read_csv("data/raw/SURVEY_data.csv")
-
+#LOAD IN THE DATA 
+################################################################################
+#MOVE ALL RAW DATA FILES INTO data/raw folder (you can drag and drop)
+#REPLACE FILENAME WITH THE ACTUAL FILENAME OF YOUR DATA
+raw_behaviouraldata <- read_csv("data/raw/FILENAME.csv")
+raw_imagingdata <- read_csv("data/raw/FILENAME.csv")
+raw_Qualtricsdata <- read_csv("data/raw/FILENAME.csv")
+#the dataframe names must stay the same for subsquent code to work properly 
+#(e.g. raw_behaviouraldata)
+################################################################################
 
 #VIEW THE IMPORTED DATA
-View(STUDYACRONYM_behavioural_data)
-View(STUDYACRONYM_imaging_data)
-View(STUDYACRONYM_survey_data)
+View(raw_behaviouraldata)
+View(raw_imagingdata)
+View(raw_Qualtricsdata)
 
-head(STUDYACRONYM_behavioural_data)
-head(STUDYACRONYM_imaging_data)
-head(STUDYACRONYM_survey_data)
+head(raw_behaviouraldata)
+head(raw_imagingdata)
+head(raw_Qualtricsdata)
 
+#-------------------------------------------------------------------------------
 #MERGE DATASETS TOGETHER
-# -----------------------------
-# Make sure all datasets use the same subject ID column name ("subject_id")
-# If not, rename before merging (rename(subject = subject_id))
-#RENAMING SUBJECT ID COLUMN
-#
-STUDYACRONYM_behavioural_data <- STUDYACRONYM_behavioural_data |> rename(subject_id = SUBID)
-STUDYACRONYM_imaging_data <- STUDYACRONYM_imaging_data |> rename(subject_id = SUBID)
-STUDYACRONYM_survey_data <- STUDYACRONYM_survey_data |> rename(subject_id = SUBID)
 
-STUDYACRONYM_data <- STUDYACRONYM_behavioural_data %>%
-  left_join(STUDYACRONYM_imaging_data,  by = "subject_id") %>%
-  left_join(STUDYACRONYM_survey_data, by = "subject_id")
+#To merge all the datasets together they have to have the same column name for the subject ID.
+#Here we rename the subject ID column in each dataset to "subject_id" for consistency.
+#Change "SUBID" to the actual column name in your datasets if it's different.
+raw_behaviouraldata <- raw_behaviouraldata |> rename(subject_id = SUBID)
+raw_imagingdata <- raw_imagingdata |> rename(subject_id = SUBID)
+raw_Qualtricsdata <- raw_Qualtricsdata |> rename(subject_id = SUBID)
+
+rawdata <- raw_behaviouraldata %>%
+  left_join(raw_imagingdata,  by = "subject_id") %>%
+  left_join(raw_Qualtricsdata, by = "subject_id")
 
 #VIEW THE MERGED DATA
-View(STUDYACRONYM_data)
+View(rawdata)
 
 #SAVE THE MERGED DATA (as a .csv file)
-write_csv(STUDYACRONYM_data, "data/processed/STUDYACRONYM_data.csv")
+write_csv(rawdata, "data/processed/raw_merged_data.csv")
+#-------------------------------------------------------------------------------
