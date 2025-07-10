@@ -40,5 +40,6 @@ rawdata <- raw_behaviouraldata %>%
 View(rawdata)
 
 #SAVE THE MERGED DATA (as a .csv file)
-write_csv(rawdata, "data/processed/raw_merged_data.csv")
+date_stamp <- format(Sys.Date(), "%Y%m%d") 
+write_csv(rawdata, paste0("data/processed/raw_merged_data", date_stamp, ".csv"))
 #-------------------------------------------------------------------------------

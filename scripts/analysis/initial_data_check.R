@@ -32,12 +32,14 @@ print(sum(duplicated(STUDYACRONYM_data)))
 num_vars <- STUDYACRONYM_data %>% select(where(is.numeric))
 
 for (var in names(num_vars)) {
-  p <- ggplot(STUDYACRONYM_data, aes_string(x = var)) +
+  p <- ggplot(STUDYACRONYM_data, aes(.data[[var]])) +
     geom_histogram(bins = 30, fill = "#69b3a2", color = "white") +
     theme_minimal() +
     labs(title = paste("Histogram of", var), x = var, y = "Count")
   
-  ggsave(filename = paste0("output/figures/histograms/hist_", var, ".png"), plot = p, width = 6, height = 4)
+  date_stamp <- format(Sys.Date(), "%Y%m%d")
+  
+  ggsave(filename = paste0("output/figures/histograms/hist_", var, "_", date_stamp, ".png"), plot = p, width = 6, height = 4)
 }
 
 # Plot: Boxplots by group (if 'group' exists)
