@@ -2,10 +2,11 @@
 
 library(dplyr)
 library(tibble)
-?tibble()
+source(R/function/scoring_rename_func.R) 
 
 #Map each PPIR-40 question to the corresponding question label that is output
 #from Qualtrics data
+
 ppir40_tibble <-  tibble(
   text = c(
   "I have always seen myself as something of a rebel.",
@@ -56,19 +57,29 @@ item = c(
   "PPI122", "PPI130", "PPI136", "PPI137", "PPI140", "PPI145", "PPI148", "PPI149", "PPI153", "PPI154"
 ))
 
+ques_tibble <- ppir40_tibble
 
+rename_qualfunc(file_path = "data/raw/rawdata.csv", ques_tibble)
 
+rawdata <- rawdata |> 
+  mutate(across(c("PPI04", "PPI10", "PPI12", "PPI18", "PPI19", "PPI22", "PPI27", "PPI32", "PPI33", "PPI34",
+                  "PPI36", "PPI40", "PPI46", "PPI47", "PPI58", "PPI67", "PPI75", "PPI76", "PPI77", "PPI80",
+                  "PPI84", "PPI87", "PPI89", "PPI97", "PPI108", "PPI109", "PPI113", "PPI115", "PPI119", "PPI121",
+                  "PPI122", "PPI130", "PPI136", "PPI137", "PPI140", "PPI145", "PPI148", "PPI149", "PPI153", "PPI154"),
+                ~ case_match(.x, "TRUE" = 1, "Mostly True" = 2, "Mostly False" = 3, "False" = 4, .default = NA),
+                .names "{.col}R"
+  )))
 
 
 # Reverse-score items (1 <-> 4, 2 <-> 3)
-df <- df %>%
+rawdata <- rawdata %>%
   mutate(across(c(PPI02, PPI06, PPI07, PPI14, PPI17, PPI18, PPI22, PPI23,
                   PPI24, PPI25, PPI26, PPI27, PPI29, PPI30, PPI32, PPI36, PPI39),
                 ~ recode(.x, `1` = 4, `2` = 3, `3` = 2, `4` = 1),
-                .names = "{.col}R"))
+                ))
 
 # Subscales
-df <- df %>%
+rawdata <- rawdata %>%
   mutate(
     Blame_externalization = rowSums(select(., PPI04, PPI05, PPI12, PPI21, PPI31), na.rm = TRUE),
     Carefree_nonplanfulness = rowSums(select(., PPI23R, PPI25R, PPI30R, PPI32R, PPI36R), na.rm = TRUE),
@@ -81,7 +92,7 @@ df <- df %>%
   )
 
 # Factors
-df <- df %>%
+rawdata <- rawdata %>%
   mutate(
     SCI = rowSums(select(., Machiavellian_egocentricity, Rebellious_nonconformity, Blame_externalization, Carefree_nonplanfulness), na.rm = TRUE),
     FD = rowSums(select(., Social_influence, Fearlessness, Stress_immunity), na.rm = TRUE),

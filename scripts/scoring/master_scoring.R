@@ -3,6 +3,9 @@
 #This script will automatically score all of the questionnaires
 #Upload you Qualtrics output to the "data/raw" folder
 #-------------------------------------------------------------------------------
+library(tidyverse)
+scoring_subscripts <- list.files("scripts/scoring/scoringsubscripts", pattern = "\\.R", full.names = TRUE)
+sapply(scoring_subscripts, source)
 ################################################################################
 #Remove all questionnaires from the list that you do not want to score
 questionnaires_to_score <- c("PCL", "BDI", "IRI", "PPIR40")
@@ -11,7 +14,6 @@ questionnaires_to_score <- c("PCL", "BDI", "IRI", "PPIR40")
 #source only the scripts in questionnaires_to_score
 for (ques in questionaires_to_score) {
   script_path <- file.path("scripts/scoring/scoringsubscripts", paste0("score_", ques, ".R"))
-  source(paste0(script_path))
   if (file.exists(script_path)) {
     source(script_path)
 } else {
@@ -23,8 +25,8 @@ for (ques in questionnaires_to_score) {
   score_func <- paste0("score_", ques)
   if (exists(score_func)) {
     get(score_func)
-    scored_data <- get(score_func)(data)
+    scored_data <- get(score_func)(raw_Qualtricsdata)
   }
 } else {
-  warning(paste("Scoring function not found for:", ques, "Skipping."))
+  warning(paste("Scoring function for", ques, "not found. Skipping."))
 }}
