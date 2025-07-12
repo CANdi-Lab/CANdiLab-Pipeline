@@ -7,15 +7,34 @@ rename_qualfunc <- function(file_path, ques_tibble) {
   
   ques_texts <- as.character(raw_labels[2, ])
   
+#cleans text from punctuation so that reassignment works
+  normalize_text <- function(x) {                                         
+    x |>
+      str_replace_all("“|”", "\"") |> 
+      str_replace_all("‘|’", "'") |>
+      str_replace_all("–", "-") |> 
+      str_squish() 
+  }
+  
+  ques_texts_clean <- normalize_text(ques_texts)                          
+  ques_tibble_clean <- ques_tibble |>                                     
+    mutate(text = normalize_text(text))                                   
+  
   matched_tibble <- tibble(
     q_num = names(rawdata),
-    ques_text = ques_texts) |>
-    left_join(ques_tibble, by = c("ques_text" = "text")) |>
-    mutate(scoring_code = coalesce(item, q_num)
-      )
+    ques_text = ques_texts_clean                                         
+  ) |> 
+    left_join(ques_tibble_clean, by = c("ques_text" = "text")) |>         
+    mutate(scoring_code = coalesce(item, q_num))
+  
+#warn if any items didn't match 
+  unmatched <- matched_tibble |> filter(is.na(item))                      
+  if (nrow(unmatched) > 0) {                                             
+    warning("Some items did not match. Here they are:")                   
+    print(unmatched)                                                      
+  }      
+  
   colnames(rawdata) <- matched_tibble$scoring_code
   return(rawdata)
-  date_stamp <- format(Sys.Date(), "%Y%m%d")
-  write_csv(rawdata, paste0("data/processed/scored", ques, "_scored", date_stamp, ".csv"))
 }
 

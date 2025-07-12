@@ -1,8 +1,8 @@
 #SCORES PPIR_40
 
-library(dplyr)
+score_PPIR40 <- function(rawdata) {library(dplyr)
 library(tibble)
-source(R/function/scoring_rename_func.R) 
+source("scripts/scoring/scoringsubscripts/scoring_rename_func.R") 
 
 #Map each PPIR-40 question to the corresponding question label that is output
 #from Qualtrics data
@@ -59,42 +59,54 @@ item = c(
 
 ques_tibble <- ppir40_tibble
 
-rename_qualfunc(file_path = "data/raw/rawdata.csv", ques_tibble)
+rawdata <- rename_qualfunc(file_path = "data/raw/rawdata.csv", ques_tibble)
 
+# Recode response text to numeric (1–4)
 rawdata <- rawdata |> 
-  mutate(across(c("PPI04", "PPI10", "PPI12", "PPI18", "PPI19", "PPI22", "PPI27", "PPI32", "PPI33", "PPI34",
-                  "PPI36", "PPI40", "PPI46", "PPI47", "PPI58", "PPI67", "PPI75", "PPI76", "PPI77", "PPI80",
-                  "PPI84", "PPI87", "PPI89", "PPI97", "PPI108", "PPI109", "PPI113", "PPI115", "PPI119", "PPI121",
-                  "PPI122", "PPI130", "PPI136", "PPI137", "PPI140", "PPI145", "PPI148", "PPI149", "PPI153", "PPI154"),
-                ~ case_match(.x, "TRUE" = 1, "Mostly True" = 2, "Mostly False" = 3, "False" = 4, .default = NA),
-                .names "{.col}R"
-  )))
-
+  mutate(across(
+    c("PPI04", "PPI10", "PPI12", "PPI18", "PPI19", "PPI22", "PPI27", "PPI32", "PPI33", "PPI34",
+      "PPI36", "PPI40", "PPI46", "PPI47", "PPI58", "PPI67", "PPI75", "PPI76", "PPI77", "PPI80",
+      "PPI84", "PPI87", "PPI89", "PPI97", "PPI108", "PPI109", "PPI113", "PPI115", "PPI119", "PPI121",
+      "PPI122", "PPI130", "PPI136", "PPI137", "PPI140", "PPI145", "PPI148", "PPI149", "PPI153", "PPI154"),
+    ~ dplyr::recode(.x,
+                    "TRUE" = 1,
+                    "Mostly True" = 2,
+                    "Mostly False" = 3,
+                    "FALSE" = 4,
+                    .default = NA_real_)
+  ))
 
 # Reverse-score items (1 <-> 4, 2 <-> 3)
 rawdata <- rawdata %>%
-  mutate(across(c(PPI02, PPI06, PPI07, PPI14, PPI17, PPI18, PPI22, PPI23,
-                  PPI24, PPI25, PPI26, PPI27, PPI29, PPI30, PPI32, PPI36, PPI39),
-                ~ recode(.x, `1` = 4, `2` = 3, `3` = 2, `4` = 1),
-                ))
+  mutate(across(c("PPI10", "PPI22", "PPI27", "PPI47", "PPI75", "PPI76", 
+                  "PPI87", "PPI89", "PPI97", "PPI108", "PPI109", "PPI113", 
+                  "PPI119", "PPI121", "PPI130", "PPI145", "PPI153"),
+                ~ recode(.x, `1` = 4, `2` = 3, `3` = 2, `4` = 1)),
+         .names = "{.col}R")
+
+rawdata <- rawdata |> 
+  mutate(across(starts_with("PPI"), as.numeric))
 
 # Subscales
 rawdata <- rawdata %>%
   mutate(
-    Blame_externalization = rowSums(select(., PPI04, PPI05, PPI12, PPI21, PPI31), na.rm = TRUE),
-    Carefree_nonplanfulness = rowSums(select(., PPI23R, PPI25R, PPI30R, PPI32R, PPI36R), na.rm = TRUE),
-    Coldheartedness = rowSums(select(., PPI07R, PPI17R, PPI24R, PPI26R, PPI39R), na.rm = TRUE),
-    Fearlessness = rowSums(select(., PPI03, PPI14R, PPI28, PPI34, PPI37), na.rm = TRUE),
-    Machiavellian_egocentricity = rowSums(select(., PPI09, PPI16, PPI19, PPI33, PPI40), na.rm = TRUE),
-    Rebellious_nonconformity = rowSums(select(., PPI01, PPI11, PPI15, PPI20, PPI38), na.rm = TRUE),
-    Social_influence = rowSums(select(., PPI06R, PPI10, PPI13, PPI22R, PPI27R), na.rm = TRUE),
-    Stress_immunity = rowSums(select(., PPI02R, PPI08, PPI18R, PPI29R, PPI35), na.rm = TRUE)
+    Blame_externalization = rowSums(across(all_of(c("PPI18", "PPI19", "PPI40", "PPI84", "PPI122")), as.numeric), na.rm = TRUE),
+    Carefree_nonplanfulness = rowSums(across(all_of(c("PPI89", "PPI108", "PPI121", "PPI130", "PPI145")), as.numeric), na.rm = TRUE),
+    Coldheartedness = rowSums(across(all_of(c("PPI27", "PPI75", "PPI97", "PPI109", "PPI153")), as.numeric), na.rm = TRUE),
+    Fearlessness = rowSums(across(all_of(c("PPI12", "PPI47", "PPI115", "PPI137", "PPI148")), as.numeric), na.rm = TRUE),
+    Machiavellian_egocentricity = rowSums(across(all_of(c("PPI33", "PPI67", "PPI77", "PPI136", "PPI154")), as.numeric), na.rm = TRUE),
+    Rebellious_nonconformity = rowSums(across(all_of(c("PPI04", "PPI36", "PPI58", "PPI80", "PPI149")), as.numeric), na.rm = TRUE),
+    Social_influence = rowSums(across(all_of(c("PPI22", "PPI34", "PPI46", "PPI87", "PPI113")), as.numeric), na.rm = TRUE),
+    Stress_immunity = rowSums(across(all_of(c("PPI10", "PPI32", "PPI76", "PPI119", "PPI140")), as.numeric), na.rm = TRUE)
   )
 
-# Factors
+# --- Factors ---
 rawdata <- rawdata %>%
   mutate(
-    SCI = rowSums(select(., Machiavellian_egocentricity, Rebellious_nonconformity, Blame_externalization, Carefree_nonplanfulness), na.rm = TRUE),
-    FD = rowSums(select(., Social_influence, Fearlessness, Stress_immunity), na.rm = TRUE),
-    PPI_Total = rowSums(select(., SCI, FD, Coldheartedness), na.rm = TRUE)
+    SCI = rowSums(across(c(Machiavellian_egocentricity, Rebellious_nonconformity, Blame_externalization, Carefree_nonplanfulness), as.numeric), na.rm = TRUE),
+    FD = rowSums(across(c(Social_influence, Fearlessness, Stress_immunity), as.numeric), na.rm = TRUE),
+    PPI_Total = rowSums(across(c(SCI, FD, Coldheartedness), as.numeric), na.rm = TRUE)
   )
+}
+
+

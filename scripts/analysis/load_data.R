@@ -28,9 +28,9 @@ head(raw_Qualtricsdata)
 #To merge all the datasets together they have to have the same column name for the subject ID.
 #Here we rename the subject ID column in each dataset to "subject_id" for consistency.
 #Change "SUBID" to the actual column name in your datasets if it's different.
-raw_behaviouraldata <- raw_behaviouraldata |> rename(subject_id = SUBID)
+raw_behaviouraldata <- raw_behaviouraldata |> rename("Subject Number" = SUBID)
 raw_imagingdata <- raw_imagingdata |> rename(subject_id = SUBID)
-raw_Qualtricsdata <- raw_Qualtricsdata |> rename(subject_id = SUBID)
+raw_Qualtricsdata <- raw_Qualtricsdata |> rename(SUBID = "Q247")
 
 rawdata <- raw_behaviouraldata %>%
   left_join(raw_imagingdata,  by = "subject_id") %>%
@@ -40,6 +40,5 @@ rawdata <- raw_behaviouraldata %>%
 View(rawdata)
 
 #SAVE THE MERGED DATA (as a .csv file)
-date_stamp <- format(Sys.Date(), "%Y%m%d") 
-write_csv(rawdata, paste0("data/processed/raw_merged_data", date_stamp, ".csv"))
+write_csv(rawdata, paste0("data/raw/rawdata.csv"))
 #-------------------------------------------------------------------------------
