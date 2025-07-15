@@ -34,6 +34,7 @@ raw_behaviouraldata <- raw_behaviouraldata |> rename(subject_id = "COLUMN_NAME")
 raw_imagingdata <- raw_imagingdata |> rename(subject_id = "COLUMN_NAME")
 raw_Qualtricsdata <- raw_Qualtricsdata |> rename(subject_id = "COLUMN_NAME")
 
+
 rawdata <- raw_behaviouraldata %>%
   left_join(raw_imagingdata,  by = "subject_id") %>%
   left_join(raw_Qualtricsdata, by = "subject_id")
@@ -43,4 +44,3 @@ View(rawdata)
 
 #SAVE THE MERGED DATA (as a .csv file)
 write_csv(rawdata, paste0("data/raw/rawdata.csv"))
-#-------------------------------------------------------------------------------
