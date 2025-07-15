@@ -27,10 +27,12 @@ head(raw_Qualtricsdata)
 
 #To merge all the datasets together they have to have the same column name for the subject ID.
 #Here we rename the subject ID column in each dataset to "subject_id" for consistency.
-#Change "SUBID" to the actual column name in your datasets if it's different.
-raw_behaviouraldata <- raw_behaviouraldata |> rename("Subject Number" = SUBID)
-raw_imagingdata <- raw_imagingdata |> rename(subject_id = SUBID)
-raw_Qualtricsdata <- raw_Qualtricsdata |> rename(SUBID = "Q247")
+#Change "COLUMN_NAME" to the actual column name in your datasets if it's different 
+#Leave this as a string (keep the "")
+#In QUALTRICS  this will likely output as Q(##) 
+raw_behaviouraldata <- raw_behaviouraldata |> rename(subject_id = "COLUMN_NAME")
+raw_imagingdata <- raw_imagingdata |> rename(subject_id = "COLUMN_NAME")
+raw_Qualtricsdata <- raw_Qualtricsdata |> rename(subject_id = "COLUMN_NAME")
 
 rawdata <- raw_behaviouraldata %>%
   left_join(raw_imagingdata,  by = "subject_id") %>%
