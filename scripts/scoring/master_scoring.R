@@ -1,4 +1,5 @@
 #MASTER SCORING SCRIPT
+#Reminder: you have to edit code between the ######################## dividers
 #-------------------------------------------------------------------------------
 #This script will automatically score all of the questionnaires
 #Ensure that you have loaded your data in properly in the load_data.R script
@@ -33,6 +34,8 @@ for (ques in questionnaires_to_score) {
   warning(paste("Scoring function for", ques, "not found. Skipping."))
 }}
 
-datestamp <- format(Sys.time(), "%Y-%m-%d")
-write_csv(all_scores, paste0("data/processed/scored/scoreddata", datastamp, ".csv"))
+datestamp <- format(Sys.time(), "%Y-%m-%d-%H%M%S")
+for (ques in names(all_scores)) {
+  write_csv(all_scores[[ques]], paste0("data/processed/scored/", ques, "_scored_", datestamp, ".csv"))
+}
 

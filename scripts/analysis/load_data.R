@@ -34,6 +34,10 @@ raw_behaviouraldata <- raw_behaviouraldata |> rename(subject_id = "COLUMN_NAME")
 raw_imagingdata <- raw_imagingdata |> rename(subject_id = "COLUMN_NAME")
 raw_Qualtricsdata <- raw_Qualtricsdata |> rename(subject_id = "COLUMN_NAME")
 
+#Ensure this is changed
+View(raw_behaviouraldata)
+View(raw_imagingdata)
+View(raw_Qualtricsdata)
 
 rawdata <- raw_behaviouraldata %>%
   left_join(raw_imagingdata,  by = "subject_id") %>%

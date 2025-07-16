@@ -1,4 +1,5 @@
 #SCORES PPIR_40
+#DO NOT EDIT####################################################################
 
 score_PPIR40 <- function(rawdata) {
   library(dplyr)
@@ -69,13 +70,15 @@ recoded <- rawdata |>
       "PPI36", "PPI40", "PPI46", "PPI47", "PPI58", "PPI67", "PPI75", "PPI76", "PPI77", "PPI80",
       "PPI84", "PPI87", "PPI89", "PPI97", "PPI108", "PPI109", "PPI113", "PPI115", "PPI119", "PPI121",
       "PPI122", "PPI130", "PPI136", "PPI137", "PPI140", "PPI145", "PPI148", "PPI149", "PPI153", "PPI154"),
-    ~ dplyr::recode(.x,
-                    "TRUE" = 1,
-                    "Mostly True" = 2,
-                    "Mostly False" = 3,
-                    "FALSE" = 4,
-                    .default = NA_real_)
-  ))
+    ~ dplyr::recode(as.character(.x),
+                    "TRUE" = "1",
+                    "Mostly True" = "2",
+                    "Mostly False" = "3",
+                    "FALSE" = "4",
+                    .default = NA_character_),
+    .names = "{.col}"
+  )) |> 
+  mutate(across(all_of(ques_tibble$item), as.numeric))
 
 # Reverse-score items (1 <-> 4, 2 <-> 3)
 reversed_items <- c("PPI10", "PPI22", "PPI27", "PPI47", "PPI75", "PPI76", 
@@ -85,27 +88,30 @@ reversed_items <- c("PPI10", "PPI22", "PPI27", "PPI47", "PPI75", "PPI76",
 recoded <- recoded %>%
   mutate(across(
     all_of(reversed_items),
-    ~ dplyr::recode(.x, `1` = 4, `2` = 3, `3` = 2, `4` = 1)
-  ))
+    ~ dplyr::recode(as.character(.x), `1` = 4, `2` = 3, `3` = 2, `4` = 1)
+  )) |>
+  mutate(across(all_of(reversed_items), as.numeric))
 
 # Score subscales and factors
 scored <- recoded %>%
-  transmute(
-    subject_id = rawdata$subject_id,  
-    Blame_externalization = rowSums(across(all_of(c("PPI18", "PPI19", "PPI40", "PPI84", "PPI122")), as.numeric), na.rm = TRUE),
-    Carefree_nonplanfulness = rowSums(across(all_of(c("PPI89", "PPI108", "PPI121", "PPI130", "PPI145")), as.numeric), na.rm = TRUE),
-    Coldheartedness = rowSums(across(all_of(c("PPI27", "PPI75", "PPI97", "PPI109", "PPI153")), as.numeric), na.rm = TRUE),
-    Fearlessness = rowSums(across(all_of(c("PPI12", "PPI47", "PPI115", "PPI137", "PPI148")), as.numeric), na.rm = TRUE),
-    Machiavellian_egocentricity = rowSums(across(all_of(c("PPI33", "PPI67", "PPI77", "PPI136", "PPI154")), as.numeric), na.rm = TRUE),
-    Rebellious_nonconformity = rowSums(across(all_of(c("PPI04", "PPI36", "PPI58", "PPI80", "PPI149")), as.numeric), na.rm = TRUE),
-    Social_influence = rowSums(across(all_of(c("PPI22", "PPI34", "PPI46", "PPI87", "PPI113")), as.numeric), na.rm = TRUE),
-    Stress_immunity = rowSums(across(all_of(c("PPI10", "PPI32", "PPI76", "PPI119", "PPI140")), as.numeric), na.rm = TRUE)
+  mutate(
+    Blame_externalization = rowSums(select(., all_of(c("PPI18", "PPI19", "PPI40", "PPI84", "PPI122"))), na.rm = TRUE),
+    Carefree_nonplanfulness = rowSums(select(., all_of(c("PPI89", "PPI108", "PPI121", "PPI130", "PPI145"))), na.rm = TRUE),
+    Coldheartedness = rowSums(select(., all_of(c("PPI27", "PPI75", "PPI97", "PPI109", "PPI153"))), na.rm = TRUE),
+    Fearlessness = rowSums(select(., all_of(c("PPI12", "PPI47", "PPI115", "PPI137", "PPI148"))), na.rm = TRUE),
+    Machiavellian_egocentricity = rowSums(select(., all_of(c("PPI33", "PPI67", "PPI77", "PPI136", "PPI154"))), na.rm = TRUE),
+    Rebellious_nonconformity = rowSums(select(., all_of(c("PPI04", "PPI36", "PPI58", "PPI80", "PPI149"))), na.rm = TRUE),
+    Social_influence = rowSums(select(., all_of(c("PPI22", "PPI34", "PPI46", "PPI87", "PPI113"))), na.rm = TRUE),
+    Stress_immunity = rowSums(select(., all_of(c("PPI10", "PPI32", "PPI76", "PPI119", "PPI140"))), na.rm = TRUE)
   ) %>%
   mutate(
-    SCI = rowSums(across(c(Machiavellian_egocentricity, Rebellious_nonconformity, Blame_externalization, Carefree_nonplanfulness)), na.rm = TRUE),
-    FD = rowSums(across(c(Social_influence, Fearlessness, Stress_immunity)), na.rm = TRUE),
-    PPI_Total = rowSums(across(c(SCI, FD, Coldheartedness)), na.rm = TRUE)
-  )
+    SCI = rowSums(select(., Machiavellian_egocentricity, Rebellious_nonconformity, Blame_externalization, Carefree_nonplanfulness), na.rm = TRUE),
+    FD = rowSums(select(., Social_influence, Fearlessness, Stress_immunity), na.rm = TRUE),
+    PPI_Total = rowSums(select(., SCI, FD, Coldheartedness), na.rm = TRUE)
+  ) %>%
+  select(subject_id, everything())
+
+
 
 return(scored)
 }

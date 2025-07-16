@@ -1,3 +1,4 @@
+#IGNORE THIS SCRIPT, ALL FILES ARE ALREADY CREATED FOR YOU IN THE TEMPLATE#
 library(usethis)
 
 #Create the template folder structure

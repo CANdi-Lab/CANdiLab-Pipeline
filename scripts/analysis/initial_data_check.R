@@ -49,8 +49,9 @@ if ("group" %in% colnames(STUDYACRONYM_data)) {
       geom_boxplot(fill = "#ffa07a") +
       theme_minimal() +
       labs(title = paste("Boxplot of", var, "by Group"), x = "Group", y = var)
+    date_stamp <- format(Sys.Date(), "%Y%m%d")
     
-    ggsave(filename = paste0("output/figures/boxplots/box_", var, ".png"), plot = p, width = 6, height = 4)
+    ggsave(filename = paste0("output/figures/boxplots/box_", var, "_", date_stamp, ".png"), plot = p, width = 6, height = 4)
   }
 }
 
@@ -64,6 +65,8 @@ for (var in names(cat_vars)) {
     labs(title = paste("Bar Plot of", var), x = var, y = "Count") +
     theme(axis.text.x = element_text(angle = 45, hjust = 1))
   
-  ggsave(filename = paste0("output/figures/bargraphs/bar_", var, ".png"), plot = p, width = 6, height = 4)
+  date_stamp <- format(Sys.Date(), "%Y%m%d")
+  
+  ggsave(filename = paste0("output/figures/bargraphs/bar_", var, "_", date_stamp, ".png"), plot = p, width = 6, height = 4)
 }
 
