@@ -65,9 +65,8 @@ score_IRI<- function(rawdata){
   
   
   # Reverse-score items (1 <-> 4, 2 <-> 3)
-  reversed_items <- c("PPI10", "PPI22", "PPI27", "PPI47", "PPI75", "PPI76", 
-                      "PPI87", "PPI89", "PPI97", "PPI108", "PPI109", "PPI113", 
-                      "PPI119", "PPI121", "PPI130", "PPI145", "PPI153")
+  reversed_items <- c("IRI04", "IRI07", "IRI08", "IRI10", "IRI11", "IRI12", "IRI14", "IRI15", "IRI17", 
+                      "IRI18", "IRI19", "IRI21", "IRI23", "IRI25", "IRI26", "IRI27", "IRI28")
   
   recoded <- recoded |>
     mutate(across(
