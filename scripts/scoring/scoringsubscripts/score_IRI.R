@@ -1,7 +1,7 @@
 #IRI Scoring Subscript
 #DO NOT EDIT####################################################################
 
-score_IRI<- function(rawdata){
+score_IRI<- function(rawdata) {
   library(dplyr)
   library(tibble)
   source("scripts/scoring/scoringsubscripts/scoring_rename_func.R") 
@@ -73,10 +73,11 @@ score_IRI<- function(rawdata){
       all_of(reversed_items),
       ~ dplyr::recode(
         as.character(.),
-        "1" = 4L,
-        "2" = 3L,
-        "3" = 2L,
-        "4" = 1L,
+        "0" = 4L,
+        "1" = 3L,
+        "2" = 2L,
+        "3" = 1L,
+        "4" = 0L,
         .default = NA_integer_
       )
     ))
@@ -84,21 +85,14 @@ score_IRI<- function(rawdata){
   # Score subscales
   scored <- recoded |>
     mutate(
-      Blame_externalization = rowSums(across(all_of(c("PPI18", "PPI19", "PPI40", "PPI84", "PPI122"))), na.rm = TRUE),
-      Carefree_nonplanfulness = rowSums(across(all_of(c("PPI89", "PPI108", "PPI121", "PPI130", "PPI145"))), na.rm = TRUE),
-      Coldheartedness = rowSums(across(all_of(c("PPI27", "PPI75", "PPI97", "PPI109", "PPI153"))), na.rm = TRUE),
-      Fearlessness = rowSums(across(all_of(c("PPI12", "PPI47", "PPI115", "PPI137", "PPI148"))), na.rm = TRUE),
-      Machiavellian_egocentricity = rowSums(across(all_of(c("PPI33", "PPI67", "PPI77", "PPI136", "PPI154"))), na.rm = TRUE),
-      Rebellious_nonconformity = rowSums(across(all_of(c("PPI04", "PPI36", "PPI58", "PPI80", "PPI149"))), na.rm = TRUE),
-      Social_influence = rowSums(across(all_of(c("PPI22", "PPI34", "PPI46", "PPI87", "PPI113"))), na.rm = TRUE),
-      Stress_immunity = rowSums(across(all_of(c("PPI10", "PPI32", "PPI76", "PPI119", "PPI140"))), na.rm = TRUE)
+      perspective_taking = rowSums(across(all_of(c("IRI03", "IRI08", "IRI11", "IRI15", "IRI21", "IRI25", "IRI28"))), na.rm = TRUE),
+      fantasy = rowSums(across(all_of(c("IRI01", "IRI05", "IRI07", "IRI12", "IRI16", "IRI23", "IRI26"))), na.rm = TRUE),
+      empathic_concern = rowSums(across(all_of(c("IRI02", "IRI04", "IRI09", "IRI14", "IRI18", "IRI20", "IRI22"))), na.rm = TRUE),
+      personal_distress = rowSums(across(all_of(c("IRI06", "IRI10", "IRI13", "IRI17", "IRI19", "IRI24", "IRI27"))), na.rm = TRUE),
     ) |>
     mutate(
-      SCI = rowSums(across(c(Machiavellian_egocentricity, Rebellious_nonconformity, Blame_externalization, Carefree_nonplanfulness)), na.rm = TRUE),
-      FD = rowSums(across(c(Social_influence, Fearlessness, Stress_immunity)), na.rm = TRUE)
-    ) |>
-    mutate(
-      PPI_Total = rowSums(across(c(SCI, FD, Coldheartedness)), na.rm = TRUE)
+      IRI_Total = rowSums(across(all_of(c("IRI04", "IRI07", "IRI08", "IRI10", "IRI11", "IRI12", "IRI14", "IRI15", "IRI17", 
+                                            "IRI18", "IRI19", "IRI21", "IRI23", "IRI25", "IRI26", "IRI27", "IRI28"))), na.rm = TRUE),
     ) |>
     select(subject_id, everything())
   
