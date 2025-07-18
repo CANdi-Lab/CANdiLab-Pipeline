@@ -37,16 +37,14 @@ score_IRI<- function(rawdata){
       "When I am reading an interesting story or novel, I imagine how I would feel if the events in the story were happening to me.",
       "When I see someone who badly needs help in an emergency, I go to pieces.",
       "Before criticizing somebody, I try to imagine how I would feel if I were in their place."
-    )
-    item = c(
-      "PPI04", "PPI10", "PPI12", "PPI18", "PPI19", "PPI22", "PPI27", "PPI32", "PPI33", "PPI34",
-      "PPI36", "PPI40", "PPI46", "PPI47", "PPI58", "PPI67", "PPI75", "PPI76", "PPI77", "PPI80",
-      "PPI84", "PPI87", "PPI89", "PPI97", "PPI108", "PPI109", "PPI113", "PPI115", "PPI119", "PPI121",
-      "PPI122", "PPI130", "PPI136", "PPI137", "PPI140", "PPI145", "PPI148", "PPI149", "PPI153", "PPI154"
-    )
+    ),
+    item = c("IRI01", "IRI02", "IRI03", "IRI04", "IRI05", "IRI06", "IRI07", "IRI08", "IRI09", "IRI10", 
+        "IRI11", "IRI12", "IRI13", "IRI14", "IRI15", "IRI16", "IRI17", "IRI18", "IRI19", "IRI20", 
+        "IRI21", "IRI22", "IRI23", "IRI24", "IRI25", "IRI26", "IRI27", "IRI28")
+    
   )
   
-  ques_tibble <- ppir40_tibble
+  ques_tibble <- IRI_tibble
   
   rawdata <- rename_qualfunc(file_path = "data/raw/rawdata.csv", ques_tibble)
   
@@ -55,10 +53,11 @@ score_IRI<- function(rawdata){
     mutate(across(
       all_of(ques_tibble$item),
       ~ case_when(
-        trimws(tolower(as.character(.))) %in% c("true") ~ 1L,
-        trimws(as.character(.)) == "Mostly True"        ~ 2L,
-        trimws(as.character(.)) == "Mostly False"       ~ 3L,
-        trimws(tolower(as.character(.))) %in% c("false") ~ 4L,
+        trimws(tolower(as.character(.))) %in% c("a (does not describe me well)") ~ 0L,
+        trimws(tolower(as.character(.))) %in% c("b") ~ 1L,
+        trimws(tolower(as.character(.))) %in% c("c")~ 2L,
+        trimws(tolower(as.character(.))) %in% c("d") ~ 3L,
+        trimws(tolower(as.character(.))) %in% c("e (describes me well)") ~ 4L,
         TRUE ~ NA_integer_
       )
     ))
