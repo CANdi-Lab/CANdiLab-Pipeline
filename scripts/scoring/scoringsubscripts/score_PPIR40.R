@@ -71,11 +71,11 @@ recoded <- rawdata |>
       "PPI84", "PPI87", "PPI89", "PPI97", "PPI108", "PPI109", "PPI113", "PPI115", "PPI119", "PPI121",
       "PPI122", "PPI130", "PPI136", "PPI137", "PPI140", "PPI145", "PPI148", "PPI149", "PPI153", "PPI154"),
     ~ dplyr::recode(as.character(.x),
-                    "TRUE" = "1",
-                    "Mostly True" = "2",
-                    "Mostly False" = "3",
-                    "FALSE" = "4",
-                    .default = NA_character_),
+                    "TRUE" = 1L,
+                    "Mostly True" = 3L,
+                    "Mostly False" = 3L,
+                    "FALSE" = 4L,
+                    .default = NA_integer_),
     .names = "{.col}"
   )) |> 
   mutate(across(all_of(ques_tibble$item), as.numeric))
@@ -92,7 +92,7 @@ recoded <- recoded %>%
   )) |>
   mutate(across(all_of(reversed_items), as.numeric))
 
-# Score subscales and factors
+# First calculate all subscales
 scored <- recoded %>%
   mutate(
     Blame_externalization = rowSums(select(., all_of(c("PPI18", "PPI19", "PPI40", "PPI84", "PPI122"))), na.rm = TRUE),
@@ -103,13 +103,25 @@ scored <- recoded %>%
     Rebellious_nonconformity = rowSums(select(., all_of(c("PPI04", "PPI36", "PPI58", "PPI80", "PPI149"))), na.rm = TRUE),
     Social_influence = rowSums(select(., all_of(c("PPI22", "PPI34", "PPI46", "PPI87", "PPI113"))), na.rm = TRUE),
     Stress_immunity = rowSums(select(., all_of(c("PPI10", "PPI32", "PPI76", "PPI119", "PPI140"))), na.rm = TRUE)
-  ) %>%
+  )
+
+# Then compute SCI and FD
+scored <- scored %>%
   mutate(
     SCI = rowSums(select(., Machiavellian_egocentricity, Rebellious_nonconformity, Blame_externalization, Carefree_nonplanfulness), na.rm = TRUE),
-    FD = rowSums(select(., Social_influence, Fearlessness, Stress_immunity), na.rm = TRUE),
+    FD = rowSums(select(., Social_influence, Fearlessness, Stress_immunity), na.rm = TRUE)
+  )
+
+# Force all three to numeric and compute PPI_Total
+scored <- scored %>%
+  mutate(
+    SCI = as.numeric(SCI),
+    FD = as.numeric(FD),
+    Coldheartedness = as.numeric(Coldheartedness),
     PPI_Total = rowSums(select(., SCI, FD, Coldheartedness), na.rm = TRUE)
   ) %>%
   select(subject_id, everything())
+
 
 
 
