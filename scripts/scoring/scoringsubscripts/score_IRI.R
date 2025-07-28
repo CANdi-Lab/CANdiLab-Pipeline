@@ -49,9 +49,13 @@ score_IRI<- function(rawdata) {
   rawdata <- rename_qualfunc(file_path = "data/raw/rawdata.csv", ques_tibble)
   
   # Recode response text (including logical TRUE/FALSE) to numeric (1–4)
+  
+  valid_items <- ques_tibble$item[!is.na(ques_tibble$item) & ques_tibble$item != ""]
+  valid_items <- valid_items[valid_items %in% colnames(rawdata)]
+  
   recoded <- rawdata |>
     mutate(across(
-      all_of(ques_tibble$item),
+      all_of(valid_items),
       ~ case_when(
         trimws(tolower(as.character(.))) %in% c("a (does not describe me well)") ~ 0L,
         trimws(tolower(as.character(.))) %in% c("b") ~ 1L,
@@ -67,10 +71,12 @@ score_IRI<- function(rawdata) {
   # Reverse-score items (1 <-> 4, 2 <-> 3)
   reversed_items <- c("IRI04", "IRI07", "IRI08", "IRI10", "IRI11", "IRI12", "IRI14", "IRI15", "IRI17", 
                       "IRI18", "IRI19", "IRI21", "IRI23", "IRI25", "IRI26", "IRI27", "IRI28")
+  valid_reversed <- reversed_items[reversed_items %in% colnames(recoded)]
+  
   
   recoded <- recoded |>
     mutate(across(
-      all_of(reversed_items),
+      all_of(valid_reversed),
       ~ dplyr::recode(
         as.character(.),
         "0" = 4L,
@@ -83,18 +89,38 @@ score_IRI<- function(rawdata) {
     ))
   
   # Score subscales
-  scored <- recoded |>
-    mutate(
-      perspective_taking = rowSums(across(all_of(c("IRI03", "IRI08", "IRI11", "IRI15", "IRI21", "IRI25", "IRI28"))), na.rm = TRUE),
-      fantasy = rowSums(across(all_of(c("IRI01", "IRI05", "IRI07", "IRI12", "IRI16", "IRI23", "IRI26"))), na.rm = TRUE),
-      empathic_concern = rowSums(across(all_of(c("IRI02", "IRI04", "IRI09", "IRI14", "IRI18", "IRI20", "IRI22"))), na.rm = TRUE),
-      personal_distress = rowSums(across(all_of(c("IRI06", "IRI10", "IRI13", "IRI17", "IRI19", "IRI24", "IRI27"))), na.rm = TRUE),
-    ) |>
-    mutate(
-      IRI_Total = rowSums(across(all_of(c("IRI04", "IRI07", "IRI08", "IRI10", "IRI11", "IRI12", "IRI14", "IRI15", "IRI17", 
-                                            "IRI18", "IRI19", "IRI21", "IRI23", "IRI25", "IRI26", "IRI27", "IRI28"))), na.rm = TRUE),
-    ) |>
-    select(subject_id, everything())
+safe_items <- function(items, data) {
+    items <- items[!is.na(items) & items != ""]
+    items[items %in% colnames(data)]
+  }
+  
+scored <- recoded |>
+  mutate(
+    perspective_taking = rowSums(across(all_of(safe_items(c(
+      "IRI03", "IRI08", "IRI11", "IRI15", "IRI21", "IRI25", "IRI28"
+    ), recoded)), na.rm = TRUE)),
+    
+    fantasy = rowSums(across(all_of(safe_items(c(
+      "IRI01", "IRI05", "IRI07", "IRI12", "IRI16", "IRI23", "IRI26"
+    ), recoded)), na.rm = TRUE)),
+    
+    empathic_concern = rowSums(across(all_of(safe_items(c(
+      "IRI02", "IRI04", "IRI09", "IRI14", "IRI18", "IRI20", "IRI22"
+    ), recoded)), na.rm = TRUE)),
+    
+    personal_distress = rowSums(across(all_of(safe_items(c(
+      "IRI06", "IRI10", "IRI13", "IRI17", "IRI19", "IRI24", "IRI27"
+    ), recoded)), na.rm = TRUE))
+    ) |>  # ← this closing bracket fixes the imbalance
+      mutate(
+        IRI_Total = rowSums(across(all_of(safe_items(c(
+          "IRI04", "IRI07", "IRI08", "IRI10", "IRI11", "IRI12", "IRI14", "IRI15",
+          "IRI17", "IRI18", "IRI19", "IRI21", "IRI23", "IRI25", "IRI26", "IRI27", "IRI28"
+        ), recoded)), na.rm = TRUE))
+        ) |>
+          select(subject_id, everything())
+        
+                                                                                    
   
   return(scored)
 }

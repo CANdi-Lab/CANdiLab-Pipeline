@@ -35,6 +35,11 @@ rename_qualfunc <- function(file_path, ques_tibble) {
   ) %>%
     left_join(ques_tibble_clean, by = c("ques_text" = "text")) %>%
     mutate(scoring_code = coalesce(item, q_num))
+ 
+   matched_tibble <- matched_tibble %>%
+    group_by(scoring_code) %>%
+    slice(1) %>%
+    ungroup()
   
   unmatched <- matched_tibble %>% filter(is.na(item))
   if (nrow(unmatched) > 0) {

@@ -63,9 +63,12 @@ score_PPIR40 <- function(rawdata) {
   rawdata <- rename_qualfunc(file_path = "data/raw/rawdata.csv", ques_tibble)
   
   # Recode response text (including logical TRUE/FALSE) to numeric (1–4)
+  valid_items <- ques_tibble$item[!is.na(ques_tibble$item) & ques_tibble$item != ""]
+  valid_items <- valid_items[valid_items %in% colnames(rawdata)]
+  
   recoded <- rawdata |>
     mutate(across(
-      all_of(ques_tibble$item),
+      all_of(valid_items),
       ~ case_when(
         trimws(tolower(as.character(.))) %in% c("true") ~ 1L,
         trimws(as.character(.)) == "Mostly True"        ~ 2L,
@@ -81,10 +84,11 @@ score_PPIR40 <- function(rawdata) {
   reversed_items <- c("PPI10", "PPI22", "PPI27", "PPI47", "PPI75", "PPI76", 
                       "PPI87", "PPI89", "PPI97", "PPI108", "PPI109", "PPI113", 
                       "PPI119", "PPI121", "PPI130", "PPI145", "PPI153")
+  valid_reversed <- reversed_items[reversed_items %in% colnames(recoded)]
   
   recoded <- recoded |>
     mutate(across(
-      all_of(reversed_items),
+      all_of(valid_reversed),
       ~ dplyr::recode(
         as.character(.),
         "1" = 4L,
