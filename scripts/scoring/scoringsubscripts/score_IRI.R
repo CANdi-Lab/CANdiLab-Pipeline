@@ -53,10 +53,7 @@ score_IRI<- function(rawdata) {
   valid_items <- ques_tibble$item[!is.na(ques_tibble$item) & ques_tibble$item != ""]
   valid_items <- valid_items[valid_items %in% colnames(rawdata)]
   
-  # FINAL check before mutate — fail fast if bad names
-  if (any(is.na(valid_items)) || any(valid_items == "")) {
-    stop("❌ ERROR: 'valid_items' includes NA or empty column names: ", paste(valid_items, collapse = ", "))
-  }
+
   recoded <- rawdata |>
     mutate(across(
       all_of(valid_items),
