@@ -9,7 +9,7 @@ scoring_subscripts <- list.files("scripts/scoring/scoringsubscripts", pattern = 
 invisible(sapply(scoring_subscripts, source))
 ################################################################################
 #Remove all questionnaires from the list that you do not want to score
-questionnaires_to_score <- c("PPIR40", "IRI", "BDI")
+questionnaires_to_score <- c("PPIR40", "IRI" )
 ################################################################################
 
 #source only the scripts in questionnaires_to_score

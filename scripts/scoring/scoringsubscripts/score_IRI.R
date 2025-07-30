@@ -6,7 +6,7 @@ score_IRI<- function(rawdata) {
   library(tibble)
   source("scripts/scoring/scoringsubscripts/scoring_rename_func.R") 
   
-  # Create PPIR-40 item mapping
+  # Create IRI item mapping
   IRI_tibble <- tibble(
     text = c(
       "I daydream and fantasize, with some regularity, about things that might happen to me.",	
@@ -45,9 +45,6 @@ score_IRI<- function(rawdata) {
   )
   
   ques_tibble <- IRI_tibble
-  
-  rawdata <- rename_qualfunc(file_path = "data/raw/rawdata.csv", ques_tibble)
-  rawdata <- rawdata[, !is.na(colnames(rawdata)) & colnames(rawdata) != ""]
   
   
   # Recode response text (including logical TRUE/FALSE) to numeric (1–4)

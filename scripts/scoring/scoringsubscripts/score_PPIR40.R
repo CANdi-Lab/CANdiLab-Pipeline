@@ -60,7 +60,6 @@ score_PPIR40 <- function(rawdata) {
   
   ques_tibble <- ppir40_tibble
   
-  rawdata <- rename_qualfunc(file_path = "data/raw/rawdata.csv", ques_tibble)
   
   # Recode response text (including logical TRUE/FALSE) to numeric (1–4)
   valid_items <- ques_tibble$item[!is.na(ques_tibble$item) & ques_tibble$item != ""]
