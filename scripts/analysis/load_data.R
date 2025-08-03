@@ -8,8 +8,15 @@ library(tidyverse)
 #REPLACE FILENAME WITH THE ACTUAL FILENAME OF YOUR DATA
 raw_behaviouraldata <- read_csv("data/raw/FILENAME.csv")
 raw_imagingdata <- read_csv("data/raw/FILENAME.csv")
+
 raw_Qualtricsdata <- read_csv("data/raw/FILENAME.csv")
-#the dataframe names must stay the same for subsquent code to work properly 
+#Remove unecessary Qualtrics output
+raw_Qualtricsdata <- raw_Qualtricsdata[-c(2), ]
+colnames(raw_Qualtricsdata) <- as.character(raw_Qualtricsdata[1, ])
+raw_Qualtricsdata <- raw_Qualtricsdata[-1, ]
+raw_Qualtricsdata <- raw_Qualtricsdata <- raw_Qualtricsdata[, -(1:17)]
+
+#the dataframe names must stay the same for subsequent code to work properly 
 #(e.g. raw_behaviouraldata)
 ################################################################################
 
