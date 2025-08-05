@@ -5,34 +5,40 @@ library(tidyverse)
 library(ggplot2)
 #-------------------------------------------------------------------------------
 
+######################################################################################################
+#YOU MUST RENAME YOUR FINAL SCORED DATA FILE TO "scored_combined_final.csv" IN THE "data/scored" DIRECTORY
+scored_data <- read_csv("data/processed/scored/scored_combined_final.csv")
+
+initial_data <- scored_data
+
 # --- Inspect basic structure ---
 #Dimensions (rows, columns)
-print(dim(STUDYACRONYM_data))
+print(dim(initial_data))
 
 #Column Names
-print(names(STUDYACRONYM_data))
+print(names(initial_data))
 
 #First 5 Rows
-print(head(STUDYACRONYM_data, 5))
+print(head(initial_data, 5))
 
 #Variable Types
-print(sapply(STUDYACRONYM_data, class))
+print(sapply(initial_data, class))
 
 #Summary stats
-print(summary(STUDYACRONYM_data))
+print(summary(initial_data))
 
 # Check if there is missing values and what columns they are in
-missing <- colSums(is.na(STUDYACRONYM_data))
+missing <- colSums(is.na(initial_data))
 print(missing[missing > 0])
 
 # Check for duplicate rows
-print(sum(duplicated(STUDYACRONYM_data)))
+print(sum(duplicated(initial_data)))
 
 # --- Plot: Histograms for numeric variables ---
-num_vars <- STUDYACRONYM_data %>% select(where(is.numeric))
+num_vars <- initial_data %>% select(where(is.numeric))
 
 for (var in names(num_vars)) {
-  p <- ggplot(STUDYACRONYM_data, aes(.data[[var]])) +
+  p <- ggplot(initial_data, aes(.data[[var]])) +
     geom_histogram(bins = 30, fill = "#69b3a2", color = "white") +
     theme_minimal() +
     labs(title = paste("Histogram of", var), x = var, y = "Count")
@@ -43,9 +49,9 @@ for (var in names(num_vars)) {
 }
 
 # Plot: Boxplots by group (if 'group' exists)
-if ("group" %in% colnames(STUDYACRONYM_data)) {
+if ("group" %in% colnames(initial_data)) {
   for (var in names(num_vars)) {
-    p <- ggplot(STUDYACRONYM_data, aes_string(x = "group", y = var)) +
+    p <- ggplot(initial_data, aes_string(x = "group", y = var)) +
       geom_boxplot(fill = "#ffa07a") +
       theme_minimal() +
       labs(title = paste("Boxplot of", var, "by Group"), x = "Group", y = var)
@@ -56,10 +62,10 @@ if ("group" %in% colnames(STUDYACRONYM_data)) {
 }
 
 # Plot: Bar plots for categorical variables
-cat_vars <- STUDYACRONYM_data |> select(where(~ is.character(.x) || is.factor(.x)))
+cat_vars <- initial_data |> select(where(~ is.character(.x) || is.factor(.x)))
 
 for (var in names(cat_vars)) {
-  p <- ggplot(STUDYACRONYM_data, aes_string(x = var)) +
+  p <- ggplot(initial_data, aes_string(x = var)) +
     geom_bar(fill = "#87ceeb") +
     theme_minimal() +
     labs(title = paste("Bar Plot of", var), x = var, y = "Count") +
