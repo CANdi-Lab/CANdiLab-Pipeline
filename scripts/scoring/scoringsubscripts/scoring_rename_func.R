@@ -11,12 +11,11 @@ rename_qualfunc <- function(file_path, ques_tibble) {
     x |>
       str_replace_all("“|”", "\"") |>
       str_replace_all("‘|’", "'") |>
-      str_replace_all("–", "-") |>
-      str_replace_all("\\.", " ") |>
-      str_replace_all("\\s+", " ") |>
-      str_trim() |>
+      str_replace_all("[[:punct:]]", ".") |>     # turn all punctuation into dots
+      str_replace_all("\\s+", ".") |>            # turn all spaces into dots
       tolower()
   }
+  
   
   # Normalize column names and item texts
   colname_df <- tibble(

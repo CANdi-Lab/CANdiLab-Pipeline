@@ -10,7 +10,8 @@ scoring_subscripts <- list.files("scripts/scoring/scoringsubscripts", pattern = 
 
 ################################################################################
 # Remove all questionnaires from the list that you do not want to score
-questionnaires_to_score <- c("PPIR40", "IRI")
+questionnaires_to_score <- c("IRI")
+study_acronym <- c("STUDYACRONYM")
 ################################################################################
 
 
@@ -90,7 +91,7 @@ for (ques in names(clean_scored_data)) {
 
 clean_scored_data_all <- reduce(clean_scored_data, left_join, by = "subject_id")
 
-write_csv(clean_scored_data_all, paste0("data/processed/scored/clean_scored_data_all_", datestamp, ".csv"))
+write_csv(clean_scored_data_all, paste0("data/processed/scored/clean_scored_data_all_", study_acronym, datestamp, ".csv"))
 
 
 for (ques in names(all_scores_clean)) {
