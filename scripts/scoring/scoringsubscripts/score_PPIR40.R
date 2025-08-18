@@ -12,7 +12,7 @@ score_PPIR40 <- function(rawdata, ques_tibble) {
   
   recoded <- rawdata |>
     mutate(across(
-      all_of(ppir40_items),
+      any_of(ppir40_items),
       ~ case_when(
         trimws(tolower(as.character(.))) %in% c("true") ~ 1L,
         trimws(as.character(.)) == "Mostly True"        ~ 2L,
