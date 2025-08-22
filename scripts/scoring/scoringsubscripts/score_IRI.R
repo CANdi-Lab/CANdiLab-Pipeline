@@ -61,8 +61,9 @@ scored <- recoded |>
     personal_distress = rowSums(across(all_of(c("IRI06", "IRI10", "IRI13", "IRI17", "IRI19", "IRI24", "IRI27"))), na.rm = TRUE)
     ) |>
    mutate(
-    IRI_Total = rowSums(across(all_of(c("IRI04", "IRI07", "IRI08", "IRI10", "IRI11", "IRI12", "IRI14", "IRI15",
-          "IRI17", "IRI18", "IRI19", "IRI21", "IRI23", "IRI25", "IRI26", "IRI27", "IRI28"))), na.rm = TRUE)
+    IRI_Total = rowSums(across(all_of(c("IRI01", "IRI02", "IRI03", "IRI04", "IRI05", "IRI06", "IRI07", "IRI08", "IRI09", "IRI10", 
+                                        "IRI11", "IRI12", "IRI13", "IRI14", "IRI15", "IRI16", "IRI17", "IRI18", "IRI19", "IRI20", 
+                                        "IRI21", "IRI22", "IRI23", "IRI24", "IRI25", "IRI26", "IRI27", "IRI28"))), na.rm = TRUE)
         ) |>
           select(subject_id, everything())
                                                                                     
